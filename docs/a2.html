@@ -138,7 +138,32 @@
   <body>
     <h2>Additional Questions</h2>
     <div class="header">
-      <p>Answers to addtional questions here!</p>
+      <p><b> Volatage vs. Time graph of the voltage across an LED with 
+        analogWrite(led, 64), analogWrite(led, 128), and analogWrite(led, 255).</b></p>
+    </div>
+     <img src="A2Graph" />
+  </body>
+
+  <body>
+    <div class="header">
+      <p><b>  If all your LEDs were on simultaneously, what would the total current draw be?
+         Is this above or below the total Arduino current draw limits? 
+         If all your LEDs were on, how long would your circuit run if
+         powered by a 1200 mAh battery?</b></p>
+      <p> The sum of the current draw from the LEDs is 60mA. The button draws 1.5mA
+        This means the circuts draw 61.5mA total. Since the battery is 1200mAh,
+        1200mA/61.5mA = 19.5 hours that the circut could run for.
+      </p>
+    </div>
+  </body>
+
+  <body>
+    <div class="header">
+      <p><b>  Measure and record the actual voltage across one of your LEDs when it's on. 
+        How does this compare to the theoretical forward voltage for your LED color?</b></p>
+      <p> The actual volatge across one of the LEDs is 2.06V, which is very close to the 
+        expected 2V a red LED would have.
+      </p>
     </div>
   </body>
 
