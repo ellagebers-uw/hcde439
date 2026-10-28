@@ -53,6 +53,9 @@
         Senses light changes in a room through a photoresistor. The changes are displayed
         through red and blue LEDs. As more light is sensed, the red light gets brighter
         and the blue light gets dimmer. When less light is sensed, the reverse occurs.
+
+        Code for calibrating the system is from "Calibration" Ardiuno built in examples,
+        which is Public Domain.
         */
 
         // sets led1 to pin 11
@@ -138,35 +141,34 @@
   <body>
     <h2>Additional Questions</h2>
     <div class="header">
-      <p><b> Volatage vs. Time graph of the voltage across an LED with 
-        analogWrite(led, 64), analogWrite(led, 128), and analogWrite(led, 255).</b></p>
+      <p><b>  In your voltage divider, can the variable resistor be either R1 or R2 or
+         does it need to be one or the other? Justify your answer with example calculations.</b></p>
     </div>
-     <img src="A2Graph.jpg" />
-  </body>
-
-  <body>
-    <div class="header">
-      <p><b>  If all your LEDs were on simultaneously, what would the total current draw be?
-         Is this above or below the total Arduino current draw limits? 
-         If all your LEDs were on, how long would your circuit run if
-         powered by a 1200 mAh battery?</b></p>
-    </div>
-    <div class="header">
-      <p> The sum of the current draw from the LEDs is 60mA. The button draws 1.5mA.
-        This means the circuts draw 61.5mA total. Since the battery is 1200mAh,
-        1200mA/61.5mA = 19.5 hours that the circut could run for.
+     <img src="A3Q1.jpg" />
+     <p> The variable resistor needs to be either one or the other because if the variable resitor is R2,
+        Vout increases as R2 increases. If the variable resitor is R1, Vout decreases as R1 increases.
       </p>
-    </div>
   </body>
 
   <body>
     <div class="header">
-      <p><b>  Measure and record the actual voltage across one of your LEDs when it's on. 
-        How does this compare to the theoretical forward voltage for your LED color?</b></p>
+      <p><b>   Draw a graph where the x-axis is time and the y-axis is voltage. 
+        Plot the voltage at V-measure (where your pin is reading the voltage) of 
+        your voltage divider of your shared gif/video.</b></p>
     </div>
+    <img src="A3Q2.jpg" />
+  </body>
+
+  <body>
     <div class="header">
-      <p> The actual volatge across one of the LEDs is 2.06V, which is very close to the 
-        expected 2V a red LED would have.
+      <p><b> AnalogWrite and analogRead are respectively 8-bit and 10-bit values. 
+        Imagine you had 10-bit PWM and a 16-bit analog-to-digital converter instead. 
+        How would this change your map() code? Explain your answer.</b></p>
+    </div>
+    <img src="A3Q3.jpg" />
+    <div class="header">
+      <p> The map() code would need to be changed to reflect the new analog-to-digital converter
+        and PWM. Using the equation (2^n - 1), the new ranges can be found.
       </p>
     </div>
   </body>
