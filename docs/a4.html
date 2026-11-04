@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+
+    <title>Ella Gebers's HCDE 439 Physical Computing Page!</title>
+
+    <link href="style.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <h1>Ella Gebers's Assignment 4!</h1>
+    <img src="A4CircutVideo.gif" />
+    <div class="header">
+      <p>Here is all the documentation for assignment 4!</p>
+    </div>
+  </body>
+
+  <body>
+    <h2>Schematics and Calculations</h2>
+    <img src="A4Schematic.jpg" />
+    <div class="header">
+      <p>Pictured above is the schematic of the the A4 circuts. I used the schematic to plan out how 
+        to build the circut and determine what resiter I needed to use for
+       the capacitor. The servo is connected to 5V, ground, and Pin 9.
+       The capacitor has a recive pin at Pin 4, a send pin at Pin 2, and utilizes a 5M ohm resistor.
+       The 5M ohm resistor was chosen because I wanted the capacitor to sense how close my hand was.
+       This meant I needed to use a capacitor greater tan 1M ohm, which only responds to absolute touch.
+       I played around with different resistor amounts during class when learning about capacitors,
+       and determined that I would use 5M ohms for this assignmet since it responded to a hand hovering.
+       </p>
+    </div>
+  </body>
+
+  <body>
+    <h2>Circut</h2>
+    <img src="A4Circut.jpg" />
+    <div class="header">
+      <p>Pictured above is the circuts I built based off of the schematic I drew. 
+        I used 5 1M ohm resistors to have a total resistance of 5M ohms, as according to my schematic.</p>
+    </div>
+  </body>
+
+  <body>
+    <h2>Code Snippit</h2>
+    <pre>
+    <code>
+        /*
+            A4 Libraries
+
+            Turns a servo motor based on how far away a hand is hovering from the capacitor. 
+            The closer the hand hovers, the more the servo turns. During calibration, the hand
+            must not fully touch the capacitor so the sensor can detect hovering movements.
+
+            Code for calibrating the system is from "Calibration" Ardiuno built in examples,
+            which is Public Domain. The servo and capacitor code was made based on 11/3/26 in
+            class examples. I used Claude to debug my code, and the smoothing code was generated
+            using Claude.
+        */
+
+        // Servo library
+        #include <Servo.h>
+        // Capacitive Sensor library
+        #include <CapacitiveSensor.h>
+        // create Servo object to control a servo
+        Servo myservo;  
+        // variable to store the servo position
+        int pos = 0;    
+        // Set up the Capacitive sensor with a send and recieve pin
+        // first param is send, second is receive
+        CapacitiveSensor   cs_s2_r4 = CapacitiveSensor(2,4); 
+        // minimum sensor value
+        long minVal = 100000;
+        // maximum sensor value
+        long maxVal = 0;
+        // smoothing variable to hold decimals
+        float smoothed = 0;
+
+        // the setup routine
+        void setup() {
+            // attaches the servo on pin 9 to the Servo object
+            myservo.attach(9);
+            // record when callibrating begins
+            unsigned long start = millis();
+            // calibrate during the first five seconds
+            while (millis() - start < 5000) {
+                // read the capacitor:
+                long csValue = cs_s2_r4.capacitiveSensor(30);
+                if (csValue < 0) continue;
+                // record the maximum sensor value
+                if (csValue > maxVal) {
+                // sets the maxVal if there is a new max
+                maxVal = csValue;
+                }  
+                // record the minimum sensor value
+                if (csValue < minVal) {
+                // sets the minVal is there is a new min
+                minVal = csValue;
+                }  
+            }
+            // set smoothed value to where the untouched sensor reads
+            smoothed = minVal;
+        }
+
+        // the loop routine runs over and over again forever:
+        void loop() {
+            // Call the function to get the capacitive sensor value with 30 samples
+            long csReading = cs_s2_r4.capacitiveSensor(30); 
+            // in case the sensor value is outside the range seen during calibration
+            csReading = constrain (csReading, minVal, maxVal);
+            //smooth the data so the servo doesn't jitter
+            smoothed = 0.9 * smoothed + 0.1 * csReading;
+            // apply the calibration to the sensor reading
+            pos = map ((long)smoothed, minVal, maxVal, 0, 180);
+            // tell servo to go to position in variable 'pos'
+            myservo.write(pos);
+            // delay servo update and new sensor reading
+            delay(30); 
+        }
+    </pre>
+    </code>
+  </body>
+
+  <body>
+    <h2>Circut's Operation</h2>
+    <img src="A4CircutVideo.gif" />
+    <div class="header">
+      <p>Pictured above is the working circut I built running the code I wrote.</p>
+    </div>
+  </body>
+
+  <body>
+    <h2>Additional Questions</h2>
+    <div class="header">
+      <p><b>  In your voltage divider, can the variable resistor be either R1 or R2 or
+         does it need to be one or the other? Justify your answer with example calculations.</b></p>
+    </div>
+     <img src="A3Q1.jpg" />
+     <p> The variable resistor needs to be either one or the other because if the variable resitor is R2,
+        Vout increases as R2 increases. If the variable resitor is R1, Vout decreases as R1 increases.
+      </p>
+  </body>
+
+  <body>
+    <div class="header">
+      <p><b>   Draw a graph where the x-axis is time and the y-axis is voltage. 
+        Plot the voltage at V-measure (where your pin is reading the voltage) of 
+        your voltage divider of your shared gif/video.</b></p>
+    </div>
+    <img src="A3Q2.jpg" />
+  </body>
+
+  <body>
+    <div class="header">
+      <p><b> AnalogWrite and analogRead are respectively 8-bit and 10-bit values. 
+        Imagine you had 10-bit PWM and a 16-bit analog-to-digital converter instead. 
+        How would this change your map() code? Explain your answer.</b></p>
+    </div>
+    <img src="A3Q3.jpg" />
+    <div class="header">
+      <p> The map() code would need to be changed to reflect the new analog-to-digital converter
+        and PWM. Using the equation (2^n - 1), the new ranges can be found.
+      </p>
+    </div>
+  </body>
+
+</html>
