@@ -7,7 +7,15 @@
 }
 
 * {
-  margin: 1;
+  margin: 0;
+}
+
+p {
+  margin-top: 1em;
+}
+
+p + p {
+  margin-top: 1em;
 }
 
 img,
@@ -70,9 +78,4 @@ h2 {
 
 .assignment p {
   margin-top: 0.5em;
-}
-
-p {
-  margin-top: 1em;
-  margin-bottom: 1em;
 }
