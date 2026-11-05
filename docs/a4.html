@@ -147,7 +147,7 @@
             Draw a graph with the x-axis as time and the y-axis as voltage at pin 9 with respect to ground.
         </b></p>
     
-     <img src="A3Q1.jpg" />
+     <img src="A4Q1.jpg" />
   </body>
 
   <body>
@@ -156,9 +156,32 @@
         leading it to give us an erroneous reading 1% of the time. 
         How can we address this? Answer in (pseudo)code.</b></p>
     </div>
+    <p>The problem seems to be data spikes, which is an occasional read way different from others.
+      The solution is to use a median filter or limit the range. A median filter creates a larger window
+      which can handle more bad readings. Limiting the range throws out values outside of the range.
+    </p>
     <pre>
     <code>
-        //pseudo code here
+      
+      //Median Filter
+      int readings[WINDOW];
+
+      void loop() {
+	      readings[index] = analogRead(A0);
+	      sorted = sort(readings);
+	      filtered_val = sorted[WINDOW/2];
+      }
+
+      //Range Limiting
+      if (sensorValue > 2.5*prevSensorValue) {
+        sensorValue = prevSensorValue;
+      }
+
+      OR
+
+      if (sensorValue > 5000) {
+        sensorValue = prevSensorValue;
+      }
     </pre>
     </code>
   </body>
@@ -169,9 +192,31 @@
          deviate from the true measurement up or down by 10%. 
          How can we address this? Answer in (pseudo)code.</b></p>
     </div>
+    <p> The problem seems to be high frequency noise, which causes a fuzzy signal, 
+      with values around the same number but not exactly the same. The solution is
+      to use smoothing or low-pass filtering. Smoothing uses a moving average. 
+    </p>
         <pre>
         <code>
-          //pseudo code here
+          //Soothing code modified from Ardunio's examples, which are public domain:
+          
+          const int numReadings = 10;
+
+          int readings[numReadings];  
+          int readIndex = 0;          
+          int total = 0;              
+          int average = 0;            
+
+          void loop() {
+            total = total - readings[readIndex];
+            readings[readIndex] = analogRead(inputPin);
+            total = total + readings[readIndex];
+            readIndex = readIndex + 1;
+            if (readIndex >= numReadings) {
+              readIndex = 0;
+            }
+            average = total / numReadings;
+          }
         </pre>
         </code>
   </body>
