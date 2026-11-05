@@ -232,7 +232,8 @@
         That’s fine on its own, but it means the library’s baseline is set at the first reading
         and never adjusts. If your hand is near the pad at power-up,
         the baseline is wrong for the entire session. 
-        Either remove that line (let the library self-calibrate) or make sure nothing touches the pad when the Arduino powers on.
+        Either remove that line (let the library self-calibrate)
+         or make sure nothing touches the pad when the Arduino powers on.
         </p>
         
 
@@ -252,8 +253,10 @@
              It works, but remove the global or the local to avoid confusion.</p>
         </i>
         
-        <p> I fixed the problems in my code, and when I calibrated the system I did not touch the coin, since
-            I wanted the capacitor to detect when my hand was hovering. I found that my servo was acting jittery, so I told Claude 
+        <p> I fixed the problems in my code, and when I calibrated the system
+             I did not touch the coin, since
+            I wanted the capacitor to detect when my hand was hovering. 
+            I found that my servo was acting jittery, so I told Claude 
             <b>"The servo is jittery"</b> 
         </p>
 
@@ -261,10 +264,48 @@
             Answer:
         </p>
 
+        <i>
         <p>
-            
+            Jitter almost always comes from noisy sensor readings being passed straight
+             to the servo, or from the servo’s power sagging. Capacitive readings fluctuate
+              by a few units even when nothing changes, and map() turns every tiny fluctuation
+               into a 1-degree command. Fix it in this order.
+        </p>
+
+        <p>
+            1. Smooth the readings in code:
+            Use an exponential moving average plus a deadband, so the servo only moves when
+             the smoothed value changes meaningfully:
         </p>
         
+        <pre>
+        <code>
+            float smoothed = 0;
+            int lastPos = -1;
+
+            void loop() {
+            long csReading = cs_s2_r4.capacitiveSensor(30);
+            if (csReading < 0) return;
+
+            csReading = constrain(csReading, minVal, maxVal);
+
+            smoothed = 0.9 * smoothed + 0.1 * csReading;   // lower the 0.1 for more smoothing
+            int pos = map((long)smoothed, minVal, maxVal, 0, 180);
+
+            if (abs(pos - lastPos) >= 2) {  // deadband: ignore changes under 2 degrees
+                myservo.write(pos);
+                lastPos = pos;
+            }
+
+            delay(30);
+            }
+        </pre>
+        </code>
+
+        <p>Add smoothed = minVal; at the end of setup() so it doesn’t start at 0 and sweep up from nothing. 
+            Tuning: if it’s still jittery, use 0.95 / 0.05 and a deadband of 3. If it feels sluggish, go the other way.</p>
+        </i>
+        <p> I also asked clarifying questions to Claude about what smoothed=minVal does, and what fload smoothed = 0 does</p>
       </p>
     </div>
   </body>
