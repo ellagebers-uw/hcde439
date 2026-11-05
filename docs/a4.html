@@ -189,16 +189,16 @@
         so I asked claude  <b>"why does the servo move the same amount every time"</b>
         and provided it my code.
         </p>
-        
+        <p></p>
         <p>
         Answer: 
         </p>
-
+        <p></p>
         <i><p>"Most likely the calibration range is too narrow or too wide,
          or the readings are saturating, so the angle jumps to the same endpoint
         no matter how you touch. Here are the usual causes, roughly in order
         of likelihood.</p>
-        
+        <p></p>
         <p> 1. You didn’t touch the pad during calibration.
          If minVal and maxVal ended up almost equal, map()
         squeezes the whole range into a tiny window. Any
@@ -208,24 +208,24 @@
         close together, that’s the problem. 
         Touch firmly during the 5 seconds, 
         or add the if (maxVal - minVal < 20) guard.</p>
-        
+        <p></p>
 
         <p>2. The readings are huge or pinned. With a big resistor and 30 samples,
          readings can spike to the library’s maximum (and a failed read returns -2).
           If your touch and no-touch values are both at the ceiling, every reading maps to the same angle.
            Try a smaller resistor (100 kΩ to 1 MΩ), fewer samples (capacitiveSensor(10)), or a smaller foil pad.</p>
-
+        <p></p>
        <p> 3. A single spike set the range. 
         At startup, one noisy reading can set maxVal absurdly high.
         Then normal touches only reach a small fraction of the range and the servo barely moves,
         always about the same amount. Fix by ignoring negative values and averaging a few reads:
         (It also provded me code that I did not use.)
         </p>
-
+        <p></p>
         <p>
         Problems in your code
         </p>
-        
+        <p></p>
         <p>
          1. Autocalibrate is turned off, and the calibration never gets a clean baseline.
         set_CS_AutocaL_Millis(0xFFFFFFFF) disables the library’s automatic baseline tracking.
@@ -235,35 +235,35 @@
         Either remove that line (let the library self-calibrate)
          or make sure nothing touches the pad when the Arduino powers on.
         </p>
-        
+        <p></p>
 
         <p>2. Failed reads (-2) and negative values pollute minVal. capacitiveSensor() returns -2 on a timeout.
              If even one read fails during the 5 seconds, minVal becomes -2, and any single spike sets maxVal
               very high. Skip bad reads: if (csValue < 0) continue;</p>
-
+<p></p>
         <p>3. The calibration window is millis() < 5000, not “5 seconds from start”.
             You declared start but never used it. This works only because setup() runs right at boot,
             but millis() - start < 5000 is the safe form. It’s not your bug, just worth cleaning up.</p>
-
+<p></p>
         <p> 4. You get no feedback while calibrating. If you don’t touch the pad during those 5 seconds,
              maxVal stays close to minVal and the servo jumps to the same endpoints regardless of touch.
               Add an LED so you know when to touch (Code was provided that I did not use)
-
+<p></p>
         <p> 5. Shadowed variable (minor). int pos inside loop() hides the global pos.
              It works, but remove the global or the local to avoid confusion.</p>
         </i>
-        
+        <p></p>
         <p> I fixed the problems in my code, and when I calibrated the system
              I did not touch the coin, since
             I wanted the capacitor to detect when my hand was hovering. 
             I found that my servo was acting jittery, so I told Claude 
             <b>"The servo is jittery"</b> 
         </p>
-
+<p></p>
         <p>
             Answer:
         </p>
-
+<p></p>
         <i>
         <p>
             Jitter almost always comes from noisy sensor readings being passed straight
@@ -271,13 +271,13 @@
               by a few units even when nothing changes, and map() turns every tiny fluctuation
                into a 1-degree command. Fix it in this order.
         </p>
-
+<p></p>
         <p>
             1. Smooth the readings in code:
             Use an exponential moving average plus a deadband, so the servo only moves when
              the smoothed value changes meaningfully:
         </p>
-        
+        <p></p>
         <pre>
         <code>
             float smoothed = 0;
@@ -301,10 +301,11 @@
             }
         </pre>
         </code>
-
+<p></p>
         <p>Add smoothed = minVal; at the end of setup() so it doesn’t start at 0 and sweep up from nothing. 
             Tuning: if it’s still jittery, use 0.95 / 0.05 and a deadband of 3. If it feels sluggish, go the other way.</p>
         </i>
+        <p></p>
         <p> I also asked clarifying questions to Claude about what smoothed=minVal does, and what fload smoothed = 0 does</p>
       </p>
     </div>
