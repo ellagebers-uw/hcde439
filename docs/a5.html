@@ -151,7 +151,34 @@
     </div>
     <pre>
     <code>
-        /code here
+        // move both motors forward (assuming forward is right)
+        digitalWrite(1A, LOW)
+        digitalWrite(2A, HIGH)
+        
+        digitalWrite(3A, LOW)
+        digitalWrite(4A, HIGH)
+
+        // move both motors backwards (assuming backwards is left)
+        digitalWrite(1A, HIGH)
+        digitalWrite(2A, LOW)
+        
+        digitalWrite(3A, HIGH)
+        digitalWrite(4A, LOW)
+
+        //first motor forward, second backwards
+        digitalWrite(1A, LOW)
+        digitalWrite(2A, HIGH)
+
+        digitalWrite(3A, HIGH)
+        digitalWrite(4A, LOW)
+
+        //one back then forward
+        //first motor moving back, then delays 5 second before moving forward
+        digitalWrite(1A, HIGH)
+        digitalWrite(2A, LOW)
+        delay(5000)
+        digitalWrite(1A, LOW)
+        digitalWrite(2A, HIGH)
     </code>
     </pre>
   </body>
