@@ -20,14 +20,16 @@
     <h2>Schematics and Calculations</h2>
     <img src="A5Schematic.jpg" />
     <div class="header">
-      <p>Pictured above is the schematic of the the A4 circuts. I used the schematic to plan out how 
+      <p>Pictured above is the schematic of the the A5 circuits. I used the schematic to plan out how 
         to build the circut and determine what resiter I needed to use for
-       the capacitive sensor. The servo is connected to 5V, ground, and Pin 9.
-       The capacitor has a recive pin at Pin 4, a send pin at Pin 2, and utilizes a 5M ohm resistor.
-       The 5M ohm resistor was chosen because I wanted the capacitor to sense how close my hand was.
+       the capacitive sensor. The capacitive sensor has a recive pin at Pin 4,
+       a send pin at Pin 2, and utilizes a 5M ohm resistor.
+       The 5M ohm resistor was chosen because I wanted the capacitive sensor to sense how close my hand was.
        This meant I needed to use a capacitor greater tan 1M ohm, which only responds to absolute touch.
        I played around with different resistor amounts during class when learning about capacitors,
        and determined that I would use 5M ohms for this assignmet since it responded to a hand hovering.
+       The LED strip has a 12V power supply and utalizes a MOSFET transitor, with its gate connecting
+       to pin 5. 
        </p>
     </div>
   </body>
@@ -120,180 +122,33 @@
 
   <body>
     <div class="header">
-      <p><b> Your input device is slightly noisy, leading the measurement to randomly
-         deviate from the true measurement up or down by 10%. 
-         How can we address this? Answer in (pseudo)code.</b></p>
+      <p><b>These are the datasheets for the n-mosfet transistor:
+        DMT6009LCT, IRLZ44N, P30N06LE. Read the text on your mosfet
+        to see which one you have. For your mosfet, what is the absolute
+        maximum amount of current between pins 2 and 3?</b></p>
     </div>
-    <p> The problem seems to be high frequency noise, which causes a fuzzy signal, 
-      with values around the same number but not exactly the same. The solution is
-      to use smoothing or low-pass filtering. Smoothing uses a moving average. 
-    </p>
-        <pre>
-        <code>
-          //Soothing code modified from Ardunio's examples, which are public domain:
-          
-          const int numReadings = 10;
-
-          int readings[numReadings];  
-          int readIndex = 0;          
-          int total = 0;              
-          int average = 0;            
-
-          void loop() {
-            total = total - readings[readIndex];
-            readings[readIndex] = analogRead(inputPin);
-            total = total + readings[readIndex];
-            readIndex = readIndex + 1;
-            if (readIndex >= numReadings) {
-              readIndex = 0;
-            }
-            average = total / numReadings;
-          }
-        </pre>
-        </code>
+    <p> answer </p>
   </body>
 
   <body>
     <div class="header">
-      <p><b> Did you use AI tools in completing this assignment? 
-        If yes, please provide details on how/when, as well as a brief reflection. 
-        If you used an LLM, please 'share' your conversation and include it as 
-        part of your submission, or cite the prompt(s) you used and the output. 
-        If no, you can either leave this question blank, or provide other 
-        information if you'd like.</b></p>
+      <p><b> Draw a schematic for a circuit with using at least your arduino,
+        a DC motor, a flyback diode, and capacitors between power and ground.
+        Find parts with datasheets you could use for each of these schematic components.</b></p>
     </div>
-        <p>I used AI in my assignment to help me troubleshoot my code. I found that AI was a helpful
-          tool for debugging, however often the code provided was not what I needed. I still needed to
-          work through some issues with trial and error. I also prompted AI with questions if I didn't 
-          understand the code it provided. AI was a helpful resource for starting off points when I was stuck.
-        </p>
-        <p>Promts and Outputs:</p>
-        <p> My servo was moving the same amount everytime I touched the capacitor
-        so I asked claude  <b>"why does the servo move the same amount every time"</b>
-        and provided it my code.
-        </p>
-        <p></p>
-        <p>
-        Answer: 
-        </p>
-        <p></p>
-        <i><p>Most likely the calibration range is too narrow or too wide,
-         or the readings are saturating, so the angle jumps to the same endpoint
-        no matter how you touch. Here are the usual causes, roughly in order
-        of likelihood.</p>
-        <p></p>
-        <p> 1. You didn’t touch the pad during calibration.
-         If minVal and maxVal ended up almost equal, map()
-        squeezes the whole range into a tiny window. Any
-        reading outside it gets clamped to the same endpoint,
-        so the servo always goes to 0 or 180. Check the Serial
-        Monitor for the “Range:” line. If the two numbers are
-        close together, that’s the problem. 
-        Touch firmly during the 5 seconds, 
-        or add the if (maxVal - minVal < 20) guard.</p>
-        <p></p>
-
-        <p>2. The readings are huge or pinned. With a big resistor and 30 samples,
-         readings can spike to the library’s maximum (and a failed read returns -2).
-          If your touch and no-touch values are both at the ceiling, every reading maps to the same angle.
-           Try a smaller resistor (100 kΩ to 1 MΩ), fewer samples (capacitiveSensor(10)), or a smaller foil pad.</p>
-        <p></p>
-       <p> 3. A single spike set the range. 
-        At startup, one noisy reading can set maxVal absurdly high.
-        Then normal touches only reach a small fraction of the range and the servo barely moves,
-        always about the same amount. Fix by ignoring negative values and averaging a few reads:
-        (It also provded me code that I did not use.)
-        </p>
-        <p></p>
-        <p>
-        Problems in your code
-        </p>
-        <p></p>
-        <p>
-         1. Autocalibrate is turned off, and the calibration never gets a clean baseline.
-        set_CS_AutocaL_Millis(0xFFFFFFFF) disables the library’s automatic baseline tracking.
-        That’s fine on its own, but it means the library’s baseline is set at the first reading
-        and never adjusts. If your hand is near the pad at power-up,
-        the baseline is wrong for the entire session. 
-        Either remove that line (let the library self-calibrate)
-         or make sure nothing touches the pad when the Arduino powers on.
-        </p>
-        <p></p>
-
-        <p>2. Failed reads (-2) and negative values pollute minVal. capacitiveSensor() returns -2 on a timeout.
-             If even one read fails during the 5 seconds, minVal becomes -2, and any single spike sets maxVal
-              very high. Skip bad reads: if (csValue < 0) continue;</p>
-<p></p>
-        <p>3. The calibration window is millis() < 5000, not “5 seconds from start”.
-            You declared start but never used it. This works only because setup() runs right at boot,
-            but millis() - start < 5000 is the safe form. It’s not your bug, just worth cleaning up.</p>
-<p></p>
-        <p> 4. You get no feedback while calibrating. If you don’t touch the pad during those 5 seconds,
-             maxVal stays close to minVal and the servo jumps to the same endpoints regardless of touch.
-              Add an LED so you know when to touch (Code was provided that I did not use)
-<p></p>
-        <p> 5. Shadowed variable (minor). int pos inside loop() hides the global pos.
-             It works, but remove the global or the local to avoid confusion.</p>
-        </i>
-        <p></p>
-        <p> I fixed the problems in my code, and when I calibrated the system
-             I did not touch the coin, since
-            I wanted the capacitor to detect when my hand was hovering. 
-            I found that my servo was acting jittery, so I told Claude 
-            <b>"The servo is jittery"</b> 
-        </p>
-<p></p>
-        <p>
-            Answer:
-        </p>
-<p></p>
-        <i>
-        <p>
-            Jitter almost always comes from noisy sensor readings being passed straight
-             to the servo, or from the servo’s power sagging. Capacitive readings fluctuate
-              by a few units even when nothing changes, and map() turns every tiny fluctuation
-               into a 1-degree command. Fix it in this order.
-        </p>
-<p></p>
-        <p>
-            1. Smooth the readings in code:
-            Use an exponential moving average plus a deadband, so the servo only moves when
-             the smoothed value changes meaningfully:
-        </p>
-        <p></p>
-        <pre>
-        <code>
-            float smoothed = 0;
-            int lastPos = -1;
-
-            void loop() {
-            long csReading = cs_s2_r4.capacitiveSensor(30);
-            if (csReading < 0) return;
-
-            csReading = constrain(csReading, minVal, maxVal);
-
-            smoothed = 0.9 * smoothed + 0.1 * csReading;   // lower the 0.1 for more smoothing
-            int pos = map((long)smoothed, minVal, maxVal, 0, 180);
-
-            if (abs(pos - lastPos) >= 2) {  // deadband: ignore changes under 2 degrees
-                myservo.write(pos);
-                lastPos = pos;
-            }
-
-            delay(30);
-            }
-        </pre>
-        </code>
-<p></p>
-        <p>Add smoothed = minVal; at the end of setup() so it doesn’t start at 0 and
-           sweep up from nothing. Tuning: if it’s still jittery, use 0.95 / 0.05 and
-            a deadband of 3. If it feels sluggish, go the other way.</p>
-        </i>
-        <p></p>
-        <p> I also asked clarifying questions to Claude about what smoothed=minVal does,
-           and what float smoothed = 0 does</p>
-      </p>
-    </div>
+    <p> answer </p>
   </body>
 
-</html>
+  <body>
+    <div class="header">
+      <p><b> Here is the datasheet for the L293D chip: https://www.ti.com/product/L293D.
+        Draw a schematic using at least your arduino, this chip, and two motors.
+        Write (pseudo) code that shows how you would move the motors both forward,
+        both back, then one forward one back, and one back then forward.</b></p>
+    </div>
+    <pre>
+    <code>
+        /code here
+    </code>
+    </pre>
+  </body>
