@@ -62,7 +62,7 @@
 
 
         // Capacitive Sensor library
-        #include <CapacitiveSensor.h>
+        include <CapacitiveSensor.h>
         // variable to store the brightness
         int brightness = 0;    
         // the pin the ledStrip is connected to
@@ -90,13 +90,13 @@
                 if (csValue < 0) continue;
                 // record the maximum sensor value
                 if (csValue > maxVal) {
-                // sets the maxVal if there is a new max
-                maxVal = csValue;
+                    // sets the maxVal if there is a new max
+                    maxVal = csValue;
                 }  
                 // record the minimum sensor value
                 if (csValue < minVal) {
-                // sets the minVal is there is a new min
-                minVal = csValue;
+                    // sets the minVal is there is a new min
+                    minVal = csValue;
                 }  
             }
             // set smoothed value to where the untouched sensor reads
