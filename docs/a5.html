@@ -79,42 +79,42 @@
 
         // the setup routine
         void setup() {
-        //set up the ledStrip pin as an output
-        pinMode(ledStrip, OUTPUT);
-        // record when callibrating begins
-        unsigned long start = millis();
-        // calibrate during the first five seconds
-        while (millis() - start < 5000) {
-            // read the capacitor:
-            long csValue = cs_s2_r4.capacitiveSensor(30);
-            if (csValue < 0) continue;
-            // record the maximum sensor value
-            if (csValue > maxVal) {
-            // sets the maxVal if there is a new max
-            maxVal = csValue;
-            }  
-            // record the minimum sensor value
-            if (csValue < minVal) {
-            // sets the minVal is there is a new min
-            minVal = csValue;
-            }  
-        }
-        // set smoothed value to where the untouched sensor reads
-        smoothed = minVal;
+            //set up the ledStrip pin as an output
+            pinMode(ledStrip, OUTPUT);
+            // record when callibrating begins
+            unsigned long start = millis();
+            // calibrate during the first five seconds
+            while (millis() - start < 5000) {
+                // read the capacitor:
+                long csValue = cs_s2_r4.capacitiveSensor(30);
+                if (csValue < 0) continue;
+                // record the maximum sensor value
+                if (csValue > maxVal) {
+                // sets the maxVal if there is a new max
+                maxVal = csValue;
+                }  
+                // record the minimum sensor value
+                if (csValue < minVal) {
+                // sets the minVal is there is a new min
+                minVal = csValue;
+                }  
+            }
+            // set smoothed value to where the untouched sensor reads
+            smoothed = minVal;
         }
 
         // the loop routine runs over and over again forever:
         void loop() {
-        // Call the function to get the capacitive sensor value with 30 samples
-        long csReading = cs_s2_r4.capacitiveSensor(30); 
-        // in case the sensor value is outside the range seen during calibration
-        csReading = constrain (csReading, minVal, maxVal);
-        //smooth the data
-        smoothed = 0.9 * smoothed + 0.1 * csReading;
-        // apply the calibration to the sensor reading
-        brightness = map ((long)smoothed, minVal, maxVal, 0, 255);
-        // fade the ledStrip to variable 'brightness'
-        analogWrite(ledStrip, brightness);
+            // Call the function to get the capacitive sensor value with 30 samples
+            long csReading = cs_s2_r4.capacitiveSensor(30); 
+            // in case the sensor value is outside the range seen during calibration
+            csReading = constrain (csReading, minVal, maxVal);
+            //smooth the data
+            smoothed = 0.9 * smoothed + 0.1 * csReading;
+            // apply the calibration to the sensor reading
+            brightness = map ((long)smoothed, minVal, maxVal, 0, 255);
+            // fade the ledStrip to variable 'brightness'
+            analogWrite(ledStrip, brightness);
         }
     </pre>
     </code>
