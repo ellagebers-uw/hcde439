@@ -44,7 +44,7 @@ function draw() {
 
   // Change text and colors based on button state. In p5, you can set colors
   // using standard CSS color names as well as many other color formats.
-  if(MouseActive){
+  if(mouseActive){
     background("pink")
   } else if (buttonState === 0) {
     // If the button is not pressed

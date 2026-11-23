@@ -42,7 +42,7 @@ void setup() {
 void loop() {
   long csReading = cs_s2_r4.capacitiveSensor(30); 
   // in case the sensor value is outside the range seen during calibration
-  if (csReading >= 0) {{
+  if (csReading >= 0) {
     csReading = constrain (csReading, minVal, maxVal);
     //smooth the data
     smoothed = 0.9 * smoothed + 0.1 * csReading;
@@ -51,7 +51,7 @@ void loop() {
  
   sensorScaled = map ((long)smoothed, minVal, maxVal, 0, 255);
 
-  Serial.println(digitalRead(BUTTON_PIN));
+  Serial.print(digitalRead(BUTTON_PIN));
   Serial.print(",");
   Serial.println(sensorScaled);
   
