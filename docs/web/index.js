@@ -1,3 +1,14 @@
+/*
+    A6
+    Ella Gebers
+    Reads a capactive sensor to determine the size of a circle on the webpage. 
+    If the button is pressed, tells the webpage to change the background color. 
+    If the mouse is moved on the webpage, the LED light turns on.
+
+    Code is inspired by the "brightness" and "button" p5-arduino examples. 
+    I utilized Claude as a tool to debug my code, as documented on my assignment webpage.
+*/
+
 // match the baud rate to the Arduino sketch
 const BAUD_RATE = 9600; 
 // Declare global variables

@@ -1,3 +1,16 @@
+/*
+    A6
+    Ella Gebers
+    Reads a capactive sensor to determine the size of a circle on the webpage. 
+    If the button is pressed, tells the webpage to change the background color. 
+    If the mouse is moved on the webpage, the LED light turns on.
+
+    Code for calibrating the system is from "Calibration" Ardiuno built in examples,
+    which is Public Domain. The capacitor code was made based on 11/3/26 in
+    class examples.
+
+*/
+
 // Capacitive Sensor library
 #include <CapacitiveSensor.h>
 // set the button to pin 7
