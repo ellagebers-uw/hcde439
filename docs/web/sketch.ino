@@ -8,7 +8,6 @@
     Code for calibrating the system is from "Calibration" Ardiuno built in examples,
     which is Public Domain. The capacitor code was made based on 11/3/26 in
     class examples.
-
 */
 
 // Capacitive Sensor library
