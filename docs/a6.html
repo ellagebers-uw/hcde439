@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+
+    <title>Ella Gebers's HCDE 439 Physical Computing Page!</title>
+
+    <link href="style.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <h1>Ella Gebers's Assignment 8!</h1>
+    <img src="A5CircuitVideo.gif" />
+    <div class="header">
+      <p>Here is all the documentation for assignment 6!</p>
+    </div>
+  </body>
+
+  <body>
+    <h2>Schematics and Calculations</h2>
+    <img src="A5Schematic.jpg" />
+    <div class="header">
+      <p>Pictured above is the schematic of the the A6 circuits. I used the schematic to plan out how 
+        to build the circut and determine what resiter I needed to use for
+       the capacitive sensor. The capacitive sensor has a recive pin at Pin 4,
+       a send pin at Pin 2, and utilizes a 5M ohm resistor.
+       The 5M ohm resistor was chosen because I wanted the capacitive sensor to sense how close my hand was.
+       This meant I needed to use a capacitor greater tan 1M ohm, which only responds to absolute touch.
+       I played around with different resistor amounts during class when learning about capacitors,
+       and determined that I would use 5M ohms for this assignmet since it responded to a hand hovering.
+       The red LED uses 2V with a current of 20mA. Using Kirchoff's and Ohm's laws, I determined the resister needed to be 150 ohms for the red LED . 
+       </p>
+    </div>
+  </body>
+
+  <body>
+    <h2>Circut</h2>
+    <img src="A5Circuit.jpg" />
+    <div class="header">
+      <p>Pictured above is the circuts I built based off of the schematic I drew. 
+        I used 5 1M ohm resistors to have a total resistance of 5M ohms, as according to my schematic.
+        I used a resister of 220 ohms for the LED, since that was the closest resistor I had
+        over the calculations of 150 ohms.</p>
+    </div>
+  </body>
+
+  <body>
+    <h2>Code Snippit</h2>
+    <pre>
+    <code>
+        /*
+            A5 High(er) voltage and transistors!
+
+            Fades an LED strip based on how far away a hand is hovering from the capacitive sensor. 
+            The closer the hand hovers, the brighter the strip becomes. During calibration,
+            the user must hover their hand over the capacitive sensor at various heights
+
+            Code for calibrating the system is from "Calibration" Ardiuno built in examples,
+            which is Public Domain. The capacitor code was made based on 11/3/26 in
+            class examples. The smoothing code was generated using Claude, as documented in
+            my A4 assignment.
+        */
+
+
+        // Capacitive Sensor library
+        include <CapacitiveSensor.h>
+        // variable to store the brightness
+        int brightness = 0;    
+        // the pin the ledStrip is connected to
+        int ledStrip = 5;
+        // Set up the Capacitive sensor with a send and recieve pin
+        // first param is send, second is receive
+        CapacitiveSensor   cs_s2_r4 = CapacitiveSensor(2,4); 
+        // minimum sensor value
+        long minVal = 100000;
+        // maximum sensor value
+        long maxVal = 0;
+        // smoothing variable to hold decimals
+        float smoothed = 0;
+
+        // the setup routine
+        void setup() {
+            //set up the ledStrip pin as an output
+            pinMode(ledStrip, OUTPUT);
+            // record when callibrating begins
+            unsigned long start = millis();
+            // calibrate during the first five seconds
+            while (millis() - start < 5000) {
+                // read the capacitor:
+                long csValue = cs_s2_r4.capacitiveSensor(30);
+                if (csValue < 0) continue;
+                // record the maximum sensor value
+                if (csValue > maxVal) {
+                    // sets the maxVal if there is a new max
+                    maxVal = csValue;
+                }  
+                // record the minimum sensor value
+                if (csValue < minVal) {
+                    // sets the minVal is there is a new min
+                    minVal = csValue;
+                }  
+            }
+            // set smoothed value to where the untouched sensor reads
+            smoothed = minVal;
+        }
+
+        // the loop routine runs over and over again forever:
+        void loop() {
+            // Call the function to get the capacitive sensor value with 30 samples
+            long csReading = cs_s2_r4.capacitiveSensor(30); 
+            // in case the sensor value is outside the range seen during calibration
+            csReading = constrain (csReading, minVal, maxVal);
+            //smooth the data
+            smoothed = 0.9 * smoothed + 0.1 * csReading;
+            // apply the calibration to the sensor reading
+            brightness = map ((long)smoothed, minVal, maxVal, 0, 255);
+            // fade the ledStrip to variable 'brightness'
+            analogWrite(ledStrip, brightness);
+        }
+    </pre>
+    </code>
+  </body>
